@@ -1,0 +1,858 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Force & Virus Simulation Network</title>
+<style type="text/css">
+  #div_root{
+    margin:auto;
+    width:1000px;
+  }
+  #div_mix{
+    padding-top: 50px;
+    padding-right: 10px;
+    padding-bottom: 20px;
+    padding-left: 10px;
+    width:16%;
+    height:100%;
+    float:left;
+    color:#ffffff;
+    background-color:#02075d;
+  }
+    #div_story{
+    padding-top: 20px;
+    padding-right: 10px;
+    padding-bottom: 10px;
+    padding-left: 10px;
+    float:right;
+    width:75%;
+    height:240px;
+    text-align:left;
+    /*background-color:#00ff00;*/
+  }
+  #div_plot{
+    padding-top: 0px;
+    padding-right: 10px;
+    padding-bottom: 10px;
+    padding-left: 20px;
+    width:50%;
+    height:100%;
+    float:left;
+    /*background-color:#00ffff;*/
+  }
+  #div_subplot{
+    padding-top: 10px;
+    padding-right: 5px;
+    padding-bottom: 10px;
+    padding-left: 5px;
+    width:20%;
+    height:100%;
+    /*text-align:center;*/
+    float:left;
+    /*color:#ffffff;*/
+    /*background-color:#02075d;*/
+  }
+
+  #div_bottom{
+    width:100%;
+    height:200px;    
+    background-color:#00ffff;
+
+  }
+
+</style>
+
+</head>
+<body topmargin = "25" leftmargin ="25" marginheigth ="25" marginwidth = "25">
+
+<script src="https://d3js.org/d3.v4.min.js"></script>
+<script src="https://d3js.org/d3.v4.js"></script>
+<script src="https://d3js.org/d3-array.v2.min.js"></script>
+
+
+<div id = "div_root">
+
+  <div id = "div_story">
+<h2> Force & Virus simulation inspired by Asimov's Novel - Foundation </h2>
+<p> There lived healthy  <span id = "num_people"> </span> in the planet - Trantor (see distribution chart below). </p>
+
+<p> People were influenced by parties and  several forces of their planet in the strength of <span id="mix_force"> </span> (please change Force Parameters in left side bar).</p>
+
+<p> One day, a virus started to affect the people. They spread  and disapper in the stocastic number of <span id ="mix_virus"></span>(please change Virus Parameters in left side bar).</p>
+
+<p> Ruller - Hari Seldon decided to isolate some people in the number of  <span id ="num_isoloateds">  </span> .</p>
+</div>
+
+<div id ="div_mix">  
+
+<i>  Note. Force parameters are applied when you tick  and Virus parameters are applied when you click "virus spread". </i> 
+<p>
+  <b> Force Parameters </b>
+
+<input type = "range" id = "partyforce" name = "partyforce" min = "0" max = "1">
+<label for="partyforce"> Force of each party <br>(0 to 1) <br> It applies to gather members of each party. </label>
+<br><br>
+
+<input type = "range" id ="ystrength" name = "ystrength" min = "-1" max = "10">
+<label for="ystrength"> Gravity from horizon <br>(-1 to 10)<br> It looks weak but make people fly. </label>
+<br><br>
+
+<input type = "range" id = "collide" name = "collide" min = "0" max = "20">
+<label for="collide"> Distance from neighbor <br>(0 to 20)  </label>
+<br><br>
+
+<input type = "range" id = "distothers" name = "distothers" min = "-20" max = "20">
+<label for="distothers"> Divided or United ? <br> (-20 to 20)<br> It applies all people to live scatter or not </label><br>
+</p>
+<hr>
+
+
+<p> <b> Virus Paramters </b> 
+<input type = "range" id = "srate" min = "0" max = "100" step ="10">  
+<label for ="srate"> ratio of spread from socialy connected people <br>(0 to 100)</label><br><br>
+
+
+<input type = "range" id = "prate" min = "0" max = "100" step ="10"> 
+<label for ="prate"> ratio of spread from spatially closed people <br>(0 to 100)</label><br><br>
+<input type = "range" id = "drate" min = "0" max = "100" step ="10">  
+<label for ="drate"> disappear (or cure) rate  <br>(0 to 100)</label><br><br>
+<input type = "range" id = "krate" min = "0" max = "10" >  
+<label for ="krate"> host-killing (or death) rate  <br>(0 to 10) 
+</label><br><br>
+</p>
+<p>
+
+</div>
+
+<div id = "div_plot">
+  <p id = pname align="center"> <i> name of person you select will be shown here </i></p>
+<canvas id="network" width="500" height="500" ></canvas>
+<input type = "radio" id ="smode" name="mode" value = "simple" checked="1">
+<label for ="simple"> simple mode </label><br>
+<input type = "radio" id ="vmode" name="mode" value = "simple">
+<label for ="vmode"> virus infection mode </label>
+<br>
+<input type="radio" id = "pmode" name="mode" value="pmode">
+<label for ="pmode"> policy mode </label>
+
+<br>
+
+<p><i>
+  Note. In simple mode, you can check the name without any action. <br>In virus infection mode, you can make people affected (even make recovered people sick again). After you select virus mode, a trend chart and virus spread button will be shown. Action triggered by "spread button" may take long in case of your data is big. <br>
+  In policy mode, you can block people to prevent spread of virus. Total number of isolated people will be shown in the story panel above.
+</i></p>
+
+<button id = "spread" style="visibility:hidden;"> virus spread </button>
+
+</div>
+
+<div id= "div_subplot">
+  <p align="center"> < distribution chart > </p>
+  
+<svg id="trantor_glance" width = "250" height = "250">></svg>
+
+<p align="center"> < trend chart ></p>
+<svg id="my_dataviz" width = "250" height = "250"></svg>
+
+
+
+
+<p id = "pstat" align="center"> </p>
+<p id = "pstat1" align="left"> </p>
+<p id = "pstat2" align="left"> </p>
+<p id = "pstat3" align="left"> </p>
+
+</div>
+
+
+
+<script>
+
+//date
+var days = [];
+
+//stat results
+var stats = new Array();
+// stats[0] = {idx:0, num_sick:0,num_recover:0, num_death:0};
+
+// people
+var target, num_people, num_party, max_party, max_degree, num_closeness = 20;
+var targets = new Set(), recovers = new Set(), deaths = new Set(), isolateds = new Set();
+
+var temp;
+
+// force & virus parameter 
+var arg_partyforce = 1, arg_ystrength = 5, 
+    arg_collide = 10, arg_distothers = 0,
+    arg_linkstrength = 1, 
+    arg_smode = 0,
+    arg_vmode = 0, 
+    arg_pmode = 0,
+    arg_srate = 0.5, arg_prate = 0.5, arg_drate = 0.5, arg_krate = 0.05;
+
+// input force &  virus paramter & vmode stat ticker 
+var mixer_partyforce = document.getElementById('partyforce'), 
+    mixer_ystrength = document.getElementById('ystrength'), 
+    mixer_collide = document.getElementById('collide'),
+    mixer_distothers = document.getElementById('distothers'),
+    mixer_srate = document.getElementById('srate'),
+    mixer_prate = document.getElementById('prate'),
+    mixer_drate = document.getElementById('drate'),
+    mixer_krate = document.getElementById('krate'),    
+    bttn_spread = document.getElementById('spread'),
+    vmode = document.getElementById('vmode');
+
+// set initial mix
+d3.select("#mix_force").text(" { " + arg_partyforce + ", " + arg_ystrength + ", " + arg_collide + ", " + arg_distothers + " }")
+    .style("color", "white")
+    .style("background-color", "#02075d");
+
+d3.select("#mix_virus").text(" { " + arg_srate*100 + "%, " + arg_prate*100 + "%, " + arg_drate*100 + "%, " + arg_krate*100 + "% }")
+    .style("color", "white")
+    .style("background-color", "#02075d");
+
+
+d3.select("#num_isoloateds").text(" { 0 } ").style("color", "white").style("background-color", "#02075d")
+
+
+// click event handling
+mixer_partyforce.onclick = function(){
+  arg_partyforce = this.value;
+  d3.select("#mix_force").text(" { " + arg_partyforce + ", " + arg_ystrength + ", " + arg_collide + ", " + arg_distothers + " }")
+    .style("color", "white")
+    .style("background-color", "#02075d");
+
+};
+
+mixer_ystrength.onclick = function(){
+  arg_ystrength = this.value;
+  d3.select("#mix_force").text(" { " + arg_partyforce + ", " + arg_ystrength + ", " + arg_collide + ", " + arg_distothers + " }")
+    .style("color", "white")
+    .style("background-color", "#02075d");
+
+};
+
+mixer_collide.onclick = function(){
+  arg_collide = this.value;
+  d3.select("#mix_force").text(" { " + arg_partyforce + ", " + arg_ystrength + ", " + arg_collide + ", " + arg_distothers + " }")
+    .style("color", "white")
+    .style("background-color", "#02075d");
+
+};
+
+mixer_distothers.onclick = function(){
+  arg_distothers = this.value;
+  d3.select("#mix_force").text(" { " + arg_partyforce + ", " + arg_ystrength + ", " + arg_collide + ", " + arg_distothers + " }")
+    .style("color", "white")
+    .style("background-color", "#02075d");
+
+};
+
+mixer_srate.onclick = function(){
+  arg_srate = this.value * 0.01;
+  d3.select("#mix_virus").text(" { " + arg_srate*100 + "%, " + arg_prate*100 + "%, " + arg_drate*100 + "%, " + arg_krate*100 + "% }")
+    .style("color", "white")
+    .style("background-color", "#02075d");
+
+};
+
+mixer_prate.onclick = function(){
+  arg_prate = this.value * 0.01;
+  d3.select("#mix_virus").text(" { " + arg_srate*100 + "%, " + arg_prate*100 + "%, " + arg_drate*100 + "%, " + arg_krate*100 + "% }")
+    .style("color", "white")
+    .style("background-color", "#02075d");
+};
+
+
+mixer_drate.onclick = function(){
+  arg_drate = this.value * 0.01;
+  d3.select("#mix_virus").text(" { " + arg_srate*100 + "%, " + arg_prate*100 + "%, " + arg_drate*100 + "%, " + arg_krate*100 + "% }")
+    .style("color", "white")
+    .style("background-color", "#02075d");
+};
+
+mixer_krate.onclick = function(){
+  arg_krate = this.value * 0.01;
+  d3.select("#mix_virus").text(" { " + arg_srate*100 + "%, " + arg_prate*100 + "%, " + arg_drate*100 + "%, " + arg_krate*100 + "% }")
+    .style("color", "white")
+    .style("background-color", "#02075d");
+};
+
+// even handling for virus click mode simulation
+smode.onclick = function(){
+ if (this.checked) {
+   arg_smode = 1;
+   arg_vmode = 0;
+   arg_pmode = 0;
+  // d3.select("#spread").attr("style", "visibility:hidden");
+
+ } else arg_smode = 0;
+};
+
+vmode.onclick = function(){
+ if (this.checked) {
+   arg_smode = 0;
+   arg_vmode = 1;
+   arg_pmode = 0;
+
+  d3.select("#spread").attr("style", "visibility:visible");
+
+ } else arg_vmode = 0;
+};
+
+//  even handling for policy click mode simulation
+pmode.onclick = function(){
+ if (this.checked) {
+   arg_smode = 0;
+   arg_vmode = 0;
+   arg_pmode = 1;
+
+  // d3.select("#spread").attr("style", "visibility:hidden");
+
+ } else arg_pmode = 0;
+};
+
+// svg chart for stat ###########################################################
+var margin = {top: 10, right: 30, bottom: 30, left: 60};
+var chart_width = d3.select("#my_dataviz").attr("width") -( margin.left + margin.right); // have margine space
+var chart_height = d3.select("#my_dataviz").attr("height") - (margin.top + margin.bottom);
+
+var svg = d3.select("#my_dataviz")
+  .append("svg")
+    .attr("width", chart_width + margin.left + margin.right)
+    .attr("height", chart_height + margin.top + margin.bottom)
+  .append("g")
+    .attr("transform",
+          "translate(" + margin.left + "," + margin.top + ")");
+
+var svg_glance = d3.select("#trantor_glance")
+    .append("svg")
+      .attr("width", chart_width + margin.left + margin.right)
+      .attr("height", chart_height + margin.top + margin.bottom)    
+    .append("g")
+      .attr("transform",
+            "translate(" + margin.left + "," + margin.top + ")");
+
+
+// canvas for network ###############################################################
+var canvas = d3.select("#network"),
+  width = canvas.attr("width"),
+  height = canvas.attr("height"),
+  ctx = canvas.node().getContext("2d"),
+  r = 10,
+  color = d3.scaleOrdinal(d3.schemeCategory20),  
+  x = d3.scaleOrdinal().range([200, (width - 200)]);
+
+// force simulation  ##################################
+var simulation = d3.forceSimulation();
+
+// json network data loading ################################################################
+// Have 4 functions : 
+// [1] bttn_spread.onclick
+// [2] update 
+// [3] dragsubject
+// [4] dragstarted
+
+d3.json("VotacionesSenado2017.json", function (err, graph) {
+  if (err) throw err;
+
+  graph.nodes.forEach(function(d){
+      d.affected = 0;
+      d.recovered = 0;
+      d.isolated = 0;
+      d.death = 0;
+  });
+
+  // use d3.array and make Map for group_by party
+  nodeByParty = d3.groups(graph.nodes, d => d.party); 
+  linkByNode = d3.groups(graph.links, d => d.source);
+
+  num_party = nodeByParty.length;
+  num_people = graph.nodes.length;
+
+  d3.select("#num_people")
+    .text(num_people +" people who belng to " + num_party +" parties ").style("color", "steelblue");
+
+  display_glance(nodeByParty, linkByNode);
+
+// set list and push appropriate positions for parties and save it as functions named xs & ys
+// this information will be used in the forceX and forceY simulation for parties.
+  xs = [];  ys = [];
+
+  drawPoint(num_party).forEach(function(d){
+    xs.push(d.x);    ys.push(d.y);  });
+
+  xs = d3.scaleOrdinal().range(xs);
+
+  ys = d3.scaleOrdinal().range(ys);
+  
+// set force 
+  simulation.nodes(graph.nodes);
+  simulation
+    .force("link", d3.forceLink()
+      .id(function (d) { return d.name; })); // I do this because graph.links has name which is supposed to used in force simulation as id.
+  simulation.force("link").links(graph.links).distance(10); // user-defined name "link" will work this with above one.
+  simulation
+    // .force("centering", d3.forceCenter(height/2, width/2))
+    .force("collide", d3.forceCollide(function(d) {return (d.isolated+1)*arg_collide;})) // (isolate dist others three times )
+    .force("charge", d3.forceManyBody().strength(arg_distothers))
+    .force("x", d3.forceX(function (d){ return width/2*(1 - arg_partyforce) +  xs(d.party)*arg_partyforce; })) 
+    .force("y", d3.forceY(function (d){ return height/2*(1 - arg_partyforce) + ys(d.party)*arg_partyforce; })) // arg_party : circyle position otherwise centering   
+  simulation.on("tick", update); // update only: no other func
+  
+  // call canvas for drag event   
+  canvas
+      .call(d3.drag()
+          .container(canvas.node()) 
+          .subject(dragsubject) // event.subject 를 받아옴
+          .on("start", dragstarted) 
+          .on("drag", dragged)
+          .on("end", dragended));
+
+
+bttn_spread.onclick = function(){
+
+        targets.forEach(function(d){
+
+          // increase recovers using sum of disapper + krate
+          let num2 = Math.random();
+          if (num2 < (arg_drate + arg_krate) & num2 > arg_krate & graph.nodes[d].death == 0 ){
+            targets.delete(d);
+            recovers.add(d);
+            graph.nodes[d].recovered = 1;
+
+          // increase deaths using kill_rate
+          } else if (num2 < arg_krate & graph.nodes[d].recovered == 0 ){
+            targets.delete(d);
+            recovers.delete(d);
+            deaths.add(d);
+            graph.nodes[d].death = 1;
+
+          }
+
+          // increase targets using stat of social spread 
+          graph.links.forEach(function(l){    
+                   let num = Math.random();
+
+                   // if check target's tail(target) and target is not immued nor death target'target not death nor immunned.. you may want to modify this ugply part
+                   if (l.source.index == d & num < arg_srate & graph.nodes[d].recovered == 0 & graph.nodes[d].death == 0 & !deaths.has(l.target.index) & !recovers.has(l.target.index)){
+
+                    // new target added below will affect the very targets.forloop. You may want break loop or modify this logic 
+                    targets.add(l.target.index);
+                    graph.nodes[l.target.index].affected = 1;
+                    }           
+                  });
+
+          // increase target using stat of physical spread
+          let x = graph.nodes[d].x;
+          let y = graph.nodes[d].y;
+
+          graph.nodes.forEach(function(n){
+
+          // if target is not source itself nor immuned nor death
+            if (n.index != d & !deaths.has(n.index) & !recovers.has(n.index)){
+
+              let dist = euclidDistance(x, y, n.x, n.y);
+
+              // if target is close 
+              if (dist < num_closeness){
+
+                let num2 = Math.random();
+
+                // increase target using stat of prate
+                if (num2 < arg_prate & graph.nodes[d].recovered == 0 & graph.nodes[d].death == 0){
+
+                  targets.add(n.index);
+
+                  graph.nodes[n.index].affected = 1;
+
+                }
+
+              }
+            }
+            // else console.log("skip");
+
+          });
+
+        });
+    // one click means one day is passed thus update stats list
+    days.push(targets.size);
+
+    stats.push({idx:days.length, num_sick:targets.size,num_recover:recovers.size, num_death:deaths.size});
+
+    d3.select("#spread").text("spread again");
+    update();
+    show_trend();
+    display_affected();
+
+  } // end of [1] bttn_spread_click
+
+  function update() {
+
+    simulation    
+      .force("collide", d3.forceCollide(function(d) {return (3*d.isolated+1)*arg_collide;})) // (isolate dist others three times )
+      .force("charge", d3.forceManyBody().strength(arg_distothers))
+      .force("x", d3.forceX(function (d){ return width/2*(1 - arg_partyforce) +  xs(d.party)*arg_partyforce; })) 
+      .force("y", d3.forceY(function (d){ return height/2*(1 - arg_partyforce) + ys(d.party)*arg_partyforce; })); // arg_party : circyle position otherwise centering   
+
+    //adopt force arguments and simulate 
+       if (arg_pmode > 0 ) {
+
+        // simulation
+        //     .force("link", null)
+        //     .force("charge", null)
+        //     .force("collide", null)
+        //     .force("x", null)
+        //     .force("y", null)
+
+      }
+   
+    // draw in canvas 
+    ctx.clearRect(0, 0, width, height);
+    ctx.linewidth = 1;
+    ctx.strokeStyle = "#aaa";
+    ctx.strokeRect(0, 0, width, height);
+
+    ctx.beginPath();
+    ctx.globalAlpha = 0.5;
+
+    graph.links.forEach(drawLink);
+    ctx.stroke();
+    ctx.globalAlpha = 1.0;
+
+    graph.nodes.forEach(drawNode);
+  } // end of [2] update
+
+  function dragsubject() {
+    //find target node and save is as caller d3.event.subject 
+    //Note return value is object as node 
+    return simulation.find(d3.event.x, d3.event.y); 
+  }   // end of [3] dragsubject
+
+
+function dragstarted() {
+  if (!d3.event.active) simulation.alphaTarget(0.3).restart();
+  d3.event.subject.fx = d3.event.subject.x;
+  d3.event.subject.fy = d3.event.subject.y;
+
+  // save target node to set and display total info
+  target = d3.event.subject;
+
+  d3.select("#pname")
+    .text(target.name)
+    .style("color", "green");
+  if (arg_vmode){
+      graph.nodes[target.index].affected = 1;
+      graph.nodes[target.index].recovered = 0;
+      graph.nodes[target.index].death = 0;
+
+      targets.add(target.index);
+      days.push(targets.size); 
+      stats.push({idx:days.length, num_sick:targets.size, num_recover:recovers.size, num_death:deaths.size});
+
+      display_affected();
+      show_trend()
+
+  }
+  else if (arg_pmode){
+
+    // isolated person to isolate them to 
+
+    graph.nodes[target.index].isolated = 1;
+    isolateds.add(target.index);
+    // targets.delete(target.index); 
+
+    d3.select("#num_isoloateds").text(" { " + isolateds.size + " } ").style("color", "white").style("background-color", "#02075d");
+
+  }
+ 
+
+} // end of [4] drag_started
+
+
+});  // end of d3.json
+
+
+// global function : EuclidDistance & display & drag  ################################################################
+function euclidDistance(ax, ay, bx, by){
+    return Math.sqrt(Math.pow(ax-bx, 2) + Math.pow(ay-by, 2));
+}
+  
+//  display stat ############################################################
+function display_glance(nodeByParty, linkByNode){
+
+      party_cnt = new Array();
+      degree_cnt = new Array();
+
+      // cnt is temp var to flatten and capture max  
+      cnt = [] 
+
+      nodeByParty.forEach(function(d, i){
+        party_cnt.push({idx:i, party:d[0], cnt:d[1].length});
+        cnt.push(d[1].length); //flatten size of parties
+      });
+
+      // max  num of party 
+      max_party = d3.max(cnt);
+
+      linkByNode.forEach(function(d, i){
+        degree_cnt.push({idx:i, people:d[0], out_degree:d[1].length});
+        cnt.push(d[1].length); // flatten size of degree
+      });
+
+      // max num of degree
+      max_degree = d3.max(cnt);
+
+         // glance the popularity of planet
+
+      // sorting by size of party (large to small)
+      party_cnt = party_cnt.slice()
+        .sort((a, b) => d3.descending(a.cnt, b.cnt));
+
+      // sorting by degree of node (small to large)
+      degree_cnt = degree_cnt.slice()
+        .sort((a, b) => d3.ascending(a.out_degree, b.out_degree));
+
+     // set scale for party_count and out_degree 
+      let scaleX = d3.scaleLinear()
+        .range([0, chart_width])
+        .domain([0, party_cnt.length]),  
+        scaleY = d3.scaleLinear()
+        .range([chart_height, 0])
+        .domain([0,max_party]),
+        scaleX1 = d3.scaleLinear() 
+        .range([0, chart_width])
+        .domain([0, degree_cnt.length]),
+        scaleY1 = d3.scaleLinear()
+        .range([chart_height, 0])
+        .domain([0, max_degree]);
+
+     // clear grid and path
+      svg_glance.selectAll("g").remove();
+      svg_glance.selectAll("path").remove();
+
+      // Add X axis. Note <g transform = "translate(0, XXX">
+      svg_glance
+      .append("g")
+        .call(d3.axisBottom(scaleX1))
+      .append("g")
+        .attr("transform", "translate( 0, " + chart_height  + ")")
+        .call(d3.axisBottom(scaleX));
+
+      // Add Y axis.Node I call pure axis first 
+      svg_glance
+      .append("g")
+        .call(d3.axisLeft(scaleY))
+      .append("g")
+        .attr("transform", "translate( " + chart_width + ", 0)")
+        .call(d3.axisRight(scaleY1));
+
+      // Add text
+      svg_glance.append("text")
+        .attr("fill","steelblue")
+        .text("size of each party")
+        .attr("x", 30)
+        .attr("y", chart_height - 30);
+      svg_glance.append("text")
+        .attr("fill", "green")
+        .text("out degree of each person")
+        .attr("x", chart_width - 200)
+        .attr("y", 50);
+
+      // Add the line
+      svg_glance.append("path")
+        .datum(party_cnt)
+        .attr("fill", "none")
+        .attr("stroke", "steelblue")
+        .attr("stroke-width", 1.5)
+        .attr("d", d3.line()
+          .x(function(d, i) {  return scaleX(i); }) // use the sorted order other than idx 
+          .y(function(d) {  return scaleY(d.cnt); })
+          );
+
+      svg_glance.append("path")
+        .datum(degree_cnt)
+        .attr("fill", "none")
+        .attr("stroke", "green")
+        .attr("stroke-width", 1.5)
+        .attr("d", d3.line()
+          .x(function(d, i) {  return scaleX1(i); }) // use the sorted order other than idx 
+          .y(function(d) {  return scaleY1(d.out_degree); })
+          );
+
+} // end of   display_glance 
+
+//bttn_report.onclick = function(){
+function show_trend(){
+
+    var scaleX = d3.scaleLinear()
+      .range([0, chart_width ])
+      .domain([0, stats.length]),  // total days
+      scaleY = d3.scaleLinear()
+      .range([chart_height, 0])
+      .domain([0,num_people]);    
+
+    svg.selectAll("g").remove();
+    svg.selectAll("path").remove();
+
+    // Add X axis. Note <g transform = "translate(0, XXX">
+    svg.append("g")
+     .attr("transform", "translate( 0, " + chart_height  + ")")
+      .call(d3.axisBottom(scaleX));
+
+    // Add Y axis
+    svg.append("g")
+      .call(d3.axisLeft(scaleY));
+
+    // Add the line
+    svg.append("path")
+      .datum(stats)
+      .attr("fill", "none")
+      .attr("stroke", "steelblue")
+      .attr("stroke-width", 1.5)
+      .attr("d", d3.line()
+        .x(function(d) {  return scaleX(d.idx); })
+        .y(function(d) {  return scaleY(d.num_sick); })
+        );
+
+    svg.append("path")
+      .datum(stats)
+      .attr("fill", "none")
+      .attr("stroke", "black")
+      .attr("stroke-dasharray", [2, 2])
+      .attr("stroke-width", 3)
+      .attr("d", d3.line()
+        .x(function(d) {  return scaleX(d.idx); })
+        .y(function(d) {  return scaleY(d.num_death); })
+        );
+
+    svg.append("path")
+      .datum(stats)
+      .attr("fill", "none")
+      .attr("stroke", "green")
+      .attr("stroke-dasharray", [4, 4])      
+      .attr("stroke-width", 1.5)
+      .attr("d", d3.line()
+        .x(function(d) {  return scaleX(d.idx); })
+        .y(function(d) {  return scaleY(d.num_recover); })
+        );
+
+    svg.append("text")
+      .attr("fill","steelblue")
+      .text("num_sick")
+      .attr("x", 10)
+      .attr("y", 10);
+
+    svg.append("text")      
+      .attr("fill","green")
+      .text("num_recover")
+      .attr("x", 10)
+      .attr("y", 30);    
+
+    svg.append("text")      
+      .attr("fill","black")
+      .text("num_death")
+      .attr("x", 10)
+      .attr("y", 50);                         
+
+    // display_affected();
+}
+
+ function display_affected(){
+
+    var rates = Math.round(targets.size / num_people * 100);
+    var rates2 = Math.round(recovers.size / num_people * 100);
+    var rates3 = Math.round(deaths.size / num_people * 100);
+
+    d3.select("#pstat").text(" Days : " + stats.length   );
+
+    d3.select("#pstat1").text("affected/gray: " + targets.size + " (" + rates +  "%)"   );
+    d3.select("#pstat2").text("recovered/rectangle: "+recovers.size + " (" + rates2 + "%)" );
+    d3.select("#pstat3").text("dead/black: "+deaths.size + " (" + rates3 + "%)"   );
+
+}
+
+
+function dragged() {
+  d3.event.subject.fx = d3.event.x;
+  d3.event.subject.fy = d3.event.y;
+}
+
+function dragended() {
+  if (!d3.event.active) simulation.alphaTarget(0);
+  d3.event.subject.fx = null;
+  d3.event.subject.fy = null;
+}
+
+function drawPoint(n){
+  // from the very center point, calculate the appropriate positions for each n parties
+  let x = width/2 ;
+  let y = height/2  ;
+
+  let ns = [...Array(n).keys()];
+  let degree = Math.PI * 2 / n;
+  let positions = new Set();
+
+  // diameter is adjusted to minus 100 points  
+  ns.forEach(function(d, i){
+    newy = Math.round(x + Math.sin(degree*(i+1)) * (x -100 ));
+    newx = Math.round(y + Math.cos(degree*(i+1)) * (y -100));
+    positions.add({idx:i, x:newx, y:newy});
+  });
+
+  return positions;
+}
+
+
+function drawNode(d) {
+
+  ctx.beginPath();
+  ctx.fillStyle = color(d.party);
+	ctx.moveTo(d.x, d.y);
+
+  // color death to black
+  if (deaths.has(d.index) > 0){
+    ctx.arc(d.x, d.y, r+1, 0, Math.PI*2);
+    ctx.fillStyle = '#000000';
+    ctx.fill();
+  }   
+
+  // color isoltor to white (Node. do this before gray)
+  else if (isolateds.has(d.index)>0){
+    ctx.arc(d.x, d.y, r+1, 0, Math.PI*2);
+    ctx.fillStyle = '#f0f0f0';  
+    ctx.fill();
+  }
+
+  // color sick to gray
+  else if (targets.has(d.index) > 0 ){
+    ctx.arc(d.x, d.y, r+1, 0, Math.PI*2);
+    ctx.fillStyle = '#808080';  
+    ctx.fill();
+  } 
+
+  // color it to original & shape recover to rect. Don't forget fill()
+    else {
+    ctx.fillStyle = color(d.party);
+    if (d.recovered == 1){
+      ctx.rect(d.x - r, d.y - r, 20, 20);
+    }
+    else {
+      ctx.arc(d.x, d.y, r, 0, Math.PI*2);
+    }
+    ctx.fill();
+	}
+}
+
+function drawLink(l) {
+
+  ctx.moveTo(l.source.x, l.source.y);
+  ctx.lineWidth = color(l.count);
+  ctx.lineTo(l.target.x, l.target.y);
+}
+
+ 
+</script>
+
+</body>
+</html>
