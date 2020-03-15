@@ -13,6 +13,9 @@ This work is especially owe to several seminal work of a novelist (Isaac Asimov)
 ### Model
 
 This study investigates how the trend of virus spread will be affected by force, society and policy within network under the view of time and space as follows: 
+
+<img src="model.JPG" height="300"  align="middle" >
+
 In this model, people’s movements are viewed as positions of nodes of world network. Their positions are initially determined by law of nature (force) and social scheme (society). As for force, I assume every nodes of network interacts with each other with attraction or repulsion like the way force does in the nature. As for society, I assume nodes belong to a certain party such as nation or political party, but furthermore, nodes interact with each other who belong to different parties. People with same party are possibility positioned close. As for policy, I incorporate the governmental action as isolating (blocking) some of people. 
 Turning to virus movement, it is featured by statistics with known numbers - cure rate, host-killing rate, and with unknown numbers - spreading rate in terms of the social links or spatial position.
 Both of people’s movement and virus spreading, both time and space have unique and important roles in that virus move to spatially-closely positioned host (person) and move to timely-next target (person). 
@@ -24,6 +27,9 @@ Json -typed dataset was used as following example of network with two nodes and 
 [graph: [nodes: {name: AAA, party: aaa}, {name: BBB, party: bbb}], [links: {source: AAA, target: BBB}]]
 
 I used the dataset of d3 https://github.com/d3/d3-force because of two reasons, first, thankfully, it is open and second it explains plausibly real-world pattern of social connection in that it represents the distribution of parties is scale-free but the connection of each nodes is not. 
+
+<img src="chart.JPG" height="250"  align="middle" >
+
 
 #### Simulation parameters
 ##### Force atlas
@@ -40,6 +46,9 @@ The third element of network in reference mode, namely, policy is not applied in
 ### Applicaion
 
 The simulation program consists of 4 panels: i) story panel, ii) left sided parameter mix panel iii) main network panel, and iv) statistics & chart. In story panel, it presents the basic statistics of dataset, force and virus parameters, and selected people to be isolated. In left sided panel, user choose parameters regarding force and virus features. In main network panel, user views the networks of given force. Each party presents different colors. If people affected virus, it colors in gray. If people killed, in black, if recovered shaped in rectangle. 
+
+<img src="main_panel.JPG" height="300"  align="middle" >
+
 
 See the source code at : https://github.com/wildcat842/NARA_Force_Virus_Block_Simulation
 
