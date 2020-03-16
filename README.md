@@ -7,7 +7,7 @@
 
 A much of flooding news regarding COVI-19 virus spreading sparked me to ask the very naïve research question: When will this nightmare  be ended, and have we handled well so far ? As a data scientist mainly working for government-funded research projects, I’ve insisted an  importance of open source project, living-lab movement, and data-driven policy. However, facing a wholly new panic called corona virus, I must confess that I’ve been neglected in exploring real-world questions and spent much of time in submitting and revising old-fashioned-nobody-care manuscripts.
 
-본 연구는 연일 계속되는 COVI-19 뉴스를 접하면서, “도대체 이 악몽은 언제 끝나고, 우리가 제대로 대처를 잘하고 있는 것인지?” 라는 “현실적인” 질문에서 시작되었습니다. 정부를 향해서는 정책은 데이터 기반으로 결정되어야 한다고 주장했었고, 데이터 과학자로서는 학문과 일상의 문제가 융합될 수 있는 연구를 하겠다고 Living Lab을 시작했지만, 제가 정작 그러한 “현실적”인 문제에 대한 탐구는 외면해왔었다는 무거운 반성이 본 연구의 배경이라 하겠습니다. 
+본 연구는 연일 계속되는 COVI-19 뉴스를 접하면서, “도대체 이 악몽은 언제 끝나고, 우리가 제대로 대처를 잘하고 있는 것인지?” 라는 “현실적인” 질문에서 시작되었습니다. 정부를 향해서는 정책은 데이터 기반으로 결정되어야 한다고 주장했었고, 데이터 과학자로서는 학문과 일상의 문제가 융합될 수 있는 연구를 하겠다고 Living Lab을 시작했지만, 제가 정작 그러한 현실적인 문제에 대한 탐구는 외면해왔었다는 무거운 반성이 본 연구의 배경이라 하겠습니다. 
 
 
 
@@ -17,7 +17,7 @@ This work is especially owe to several seminal work of a novelist (Isaac Asimov)
 
 네, 저의 워너비인  Asimov 의 소설 파운데이션의 플롯, 뉴욕대의 아티스트 Shiffman 의 물리학 (인력과 척력) 시뮬레이션 알고리즘, 사회학자 안토니 기돈의 구조화 이론을 맘껏 썼습니다. 라이브러리는 물리법칙을 구현하기에 최적의 함수를 제공하는 D3-force 활용했습니다. 
 물론, 바이러스 확산 모델링에 대한 다양한 선행 연구가 있어왔다는 것을 간단히 언급해야 할 것 같습니다. 1월에 발표된 연구에서는 (https://www.mobs-lab.org/uploads/6/7/8/7/6787877/wuhan_novel_coronavirus__6_.pdf) 이미 서울을 우한 바이러스에 2번째로 취약한 도시로 예측하기도 하였습니다.  이런 종류의 우울한 모델링은 주로 수학자들의 몫인데 그 중에서도 주목할 만한 프로젝트는 Woolley의 좀비 확산 시뮬레이션 프로젝트 (https://www.cardiff.ac.uk/news/view/825352-diffusion-of-the-dead-using-mathematics-to-escape-a-zombie-apocalypse) 로서, Dr. Woolley 가 그의 동지들과 함께 자발적으로 시작했던 비극적이기 보다는 위트 가득한 프로젝트입니다. 
-저자(개발자)는 본 연구가 이 세상에 존재하는 지혜와 상상력 더해서 현실 문제 해결의 단초를 조금이나마 제공할 수 있는 시도로서 기여할 수 있기를 감히 기대합니다. 
+저자(개발자)는 본 연구가 이렇듯 세상에 존재하는 지혜와 상상력에 더해서 현재의 문제 해결의 단초를 조금이나마 제공할 수 있는 시도가 될 수 있기를 감히 기대합니다. 
 
 
 ### Model
@@ -85,7 +85,7 @@ The simulation program consists of 4 panels: i) story panel, ii) left sided para
 
 과학과 컴퓨터 시뮬레이션, 다양한 오픈데이터와 오픈 소스 프로젝트가 일상생활의 문제와 정책 결정에 더 많이 기여할 수 있기를 바랍니다..  
 
-김소정 나라지식정보 AI 연구소장 /  Reserach Scientist at WE QUEST Institute   
+김소정 나라지식정보 AI 연구소장 /  Research Scientist at WE QUEST Institute   
  
 <img src="main_panel.JPG" height="300"  align="middle" >
 
